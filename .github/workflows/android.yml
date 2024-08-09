@@ -36,18 +36,22 @@ jobs:
       run: |
         echo "::set-output name=release_tag::$(date +"%Y.%m.%d_%H-%M")"
 
-    - run: |    
+    - id: apk_path_out
+      run: |  
         find . -name "app-release.apk" | awk -F'/' '{print $0}' | head -n 1 | xargs -I {} sh -c '
         PATH_TO_APK="{}"
         cd "$PATH_TO_APK"
-        mv app-release.apk app-release-${{ github.ref }}-${{ steps.tag.outputs.release_tag }}.apk
+        mv app-release.apk app-release-${{ steps.tag.outputs.release_tag }}.apk
+        ls -lh
+        pwd
+        echo "::set-output name=apk_path::$PATH_TO_APK"
         '
       shell: bash
       name: Rename APK
 
     - uses: softprops/action-gh-release@v1
       with:
-        tag_name: ${{ github.ref }}-${{ steps.tag.outputs.release_tag }}
-        files: ${{ github.workspace }}/app/build/outputs/apk/release/app-release-${{ github.ref }}-${{ steps.tag.outputs.release_tag }}.apk
+        tag_name: ${{ steps.tag.outputs.release_tag }}
+        files: ${{ steps.apk_path_out.outputs.apk_path }}app-release-${{ steps.tag.outputs.release_tag }}.apk
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
