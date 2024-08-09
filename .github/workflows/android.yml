@@ -36,9 +36,13 @@ jobs:
       run: |
         echo "::set-output name=release_tag::$(date +"%Y.%m.%d_%H-%M")"
 
+    - id: find_apk_path
+      run: |  
+        find . -name "*.apk"
+      shell: bash
+
     - id: apk_path_out
       run: |  
-        find . -name "app-release.apk"
         find . -name "app-release.apk" | awk -F'/' '{print $0}' | head -n 1 | xargs -I {} sh -c '
         PATH_TO_APK="{}"
         cd "$PATH_TO_APK"
