@@ -41,6 +41,7 @@ jobs:
         PATH_TO_APK="{}"
         cd "$PATH_TO_APK"
         mv app-release.apk app-release-${{ github.ref }}-${{ steps.tag.outputs.release_tag }}.apk
+        '
       shell: bash
       name: Rename APK
 
