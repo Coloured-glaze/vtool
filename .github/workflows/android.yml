@@ -38,12 +38,11 @@ jobs:
 
     - id: apk_path_out
       run: |  
+        find . -name "app-release.apk"
         find . -name "app-release.apk" | awk -F'/' '{print $0}' | head -n 1 | xargs -I {} sh -c '
         PATH_TO_APK="{}"
         cd "$PATH_TO_APK"
         mv app-release.apk app-release-${{ steps.tag.outputs.release_tag }}.apk
-        ls -lh
-        pwd
         echo "::set-output name=apk_path::$PATH_TO_APK"
         '
       shell: bash
