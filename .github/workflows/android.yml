@@ -32,19 +32,15 @@ jobs:
       # run: ./gradlew build
       run: ./gradlew assembleRelease
 
-    - name: Release
-      uses: actions/download-artifact@v3
-      with:
-        name: artifact
-        path: ${{ github.workspace }}/app/build/outputs/apk/release/
-    - id: move_file
-      run: |
-        cd ${{ github.workspace }}/app/build/outputs/apk/release/ && \
-        mv app-release.apk app-release-${{ github.ref }}.apk
-        echo "tag_name: ${{ github.ref }}"
     - id: tag
       run: |
         echo "::set-output name=release_tag::$(date +"%Y.%m.%d_%H-%M")"
+
+    - run: |
+        cd ${{ github.workspace }}/app/build/outputs/apk/release/
+        mv app-release.apk app-release-${{ github.ref }}-${{ steps.tag.outputs.release_tag }}.apk
+      name: Move and Rename APK
+
     - uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ github.ref }}-${{ steps.tag.outputs.release_tag }}
