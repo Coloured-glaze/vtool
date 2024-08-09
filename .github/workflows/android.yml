@@ -52,6 +52,6 @@ jobs:
     - uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ steps.tag.outputs.release_tag }}
-        files: ${{ steps.apk_path_out.outputs.apk_path }}app-release-${{ steps.tag.outputs.release_tag }}.apk
+        files: ${{ steps.apk_path_out.outputs.apk_path }}/app-release-${{ steps.tag.outputs.release_tag }}.apk
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
