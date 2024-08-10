@@ -22,10 +22,16 @@ buildscript {
 allprojects {
     repositories {
         maven {
-            // url 'https://jitpack.io'
-            url 'https://maven.aliyun.com/repository/public'
+            url 'https://jitpack.io'
+            // url 'https://repo.maven.apache.org/maven2/'
+            // url 'https://maven.aliyun.com/repository/public'
+            // url 'https://mirrors.cloud.tencent.com/nexus/repository/maven-public/'
+            // url 'https://repo.huaweicloud.com/repository/maven/'
+            // url 'https://mirrors.tuna.tsinghua.edu.cn/maven/'
+            // url 'https://mirrors.ustc.edu.cn/maven/'
         }
         google()
+        mavenCentral()
         jcenter()
     }
 }
