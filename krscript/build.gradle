@@ -1,3 +1,7 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version "$kotlin_version"
+}
+
 apply plugin: 'com.android.library'
 // apply plugin: 'kotlin-android'
 // apply plugin: 'kotlin-android-extensions'
@@ -25,9 +29,7 @@ android {
     }
 }
 
-plugins {
-    id 'org.jetbrains.kotlin.jvm' version "$kotlin_version"
-}
+
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
