@@ -43,7 +43,10 @@ jobs:
 
     - id: tag
       run: |
-        echo "::set-output name=release_tag::$(date +"%Y.%m.%d_%H-%M")"
+        tag=$(date +"v%Y-%m-%d-%H-%M")
+        echo "Generated release tag: $tag"
+        echo "::set-output name=release_tag::$tag"
+      # Format date as vYYYY-MM-DD-HH-MM
 
     - id: print_apk_path
       run: |  
