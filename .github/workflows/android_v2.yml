@@ -36,7 +36,9 @@ jobs:
         cache-read-only: true
       
     - name: Build with Gradle
-      run: ./gradlew build
+      run: |
+        ./gradlew clean build
+        ./gradlew build
 
     - id: tag
       run: |

@@ -4,7 +4,7 @@
 
 buildscript {
     ext.kotlin_version = '1.6.10' // 1.6.10, 1.4.10
-    ext.gradle_version = '7.0' // 7.0.0, 4.0.1
+    ext.gradle_version = '7.0.0' // 7.0.0, 4.0.1
 
     repositories {
         // maven{ url 'http://maven.aliyun.com/nexus/content/groups/public/'}
