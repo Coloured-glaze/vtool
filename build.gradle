@@ -4,11 +4,12 @@
 buildscript {
     ext.kotlin_version = '1.4.10' // 1.9.0, 1.6.10, 1.4.10
     ext.gradle_version = '7.1.2' // 7.1.2, 7.0.0, 4.0.1
-
     repositories {
-        // maven{ url 'http://maven.aliyun.com/nexus/content/groups/public/'}
-        jcenter()
+        maven { url 'https://maven.aliyun.com/repository/public' }
+
         google()
+        mavenCentral()
+        // jcenter() 
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -24,14 +25,14 @@ allprojects {
         maven { url 'https://jitpack.io' }
         maven { url 'https://repo.maven.apache.org/maven2/' }
         maven { url 'https://maven.aliyun.com/repository/public' }
-        maven { url 'https://mirrors.cloud.tencent.com/nexus/repository/maven-public/' }
-        maven { url 'https://repo.huaweicloud.com/repository/maven/' }
-        maven { url 'https://mirrors.tuna.tsinghua.edu.cn/maven/' }
-        maven { url 'https://mirrors.ustc.edu.cn/maven/' }
+        // maven { url 'https://mirrors.cloud.tencent.com/nexus/repository/maven-public/' }
+        // maven { url 'https://repo.huaweicloud.com/repository/maven/' }
+        // maven { url 'https://mirrors.tuna.tsinghua.edu.cn/maven/' }
+        // maven { url 'https://mirrors.ustc.edu.cn/maven/' }
 
         google()
         mavenCentral()
-        jcenter() // 
+        // jcenter()  
     }
 }
 
