@@ -14,7 +14,6 @@ import java.util.ArrayList;
  * 进程管理相关
  */
 public class ProcessUtils {
-
     /*
     VSS- Virtual Set Size 虚拟耗用内存（包含共享库占用的内存）
     RSS- Resident Set Size 实际使用物理内存（包含共享库占用的内存）
@@ -25,7 +24,6 @@ public class ProcessUtils {
     版权声明：本文为CSDN博主「火山石」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
     原文链接：https://blog.csdn.net/zhangcanyan/java/article/details/84556808
     */
-
     // pageSize 获取 : getconf PAGESIZE
 
     private static String LIST_COMMAND = null;

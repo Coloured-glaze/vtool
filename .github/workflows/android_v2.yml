@@ -38,7 +38,8 @@ jobs:
       
     - name: Build with Gradle
       run: |
-        ./gradlew build
+        ./gradlew assembleRelease
+      # ./gradlew build
       # ./gradlew assembleDebug --stacktrace --info --warning-mode all
 
     - id: tag
@@ -48,10 +49,14 @@ jobs:
         echo "::set-output name=release_tag::$tag"
       # Format date as vYYYY-MM-DD-HH-MM
 
+    - id: print_apk_path
+      run: |  
+        find ${{ github.workspace }} -name "Scene_*_release.apk"
+      shell: bash
+
     - id: find_apk_path
       run: |  
-        find $(pwd) -name "*.apk"
-        echo "::set-output name=apk_path::$(find $(pwd) -name "*.apk")"
+        echo "::set-output name=apk_path::$(find \${{ github.workspace }} -name "Scene_*_release.apk")"
 
     - uses: softprops/action-gh-release@v1
       with:

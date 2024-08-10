@@ -2,17 +2,10 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'kotlin-android-extensions'
-    // id 'kotlin-parcelize'
-    // id 'org.jetbrains.kotlin.jvm'
 }
-// apply plugin: 'kotlin-android'
-// apply plugin: 'kotlin-android-extensions'
 
 
 android {
-    // buildFeatures {
-    //     viewBinding true
-    // }
     compileSdkVersion 28
 
     defaultConfig {
