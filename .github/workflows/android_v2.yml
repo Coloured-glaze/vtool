@@ -38,7 +38,7 @@ jobs:
       
     - name: Build with Gradle
       run: |
-        ./gradlew assembleDebug --stacktrace --info
+        ./gradlew assembleDebug :krscript:compileDebugKotlin --stacktrace --info --warning-mode all
 
     - id: tag
       run: |
