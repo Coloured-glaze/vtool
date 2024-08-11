@@ -506,7 +506,7 @@ class FloatMonitor(private val mContext: Context) {
         }
     }
 
-    private fun batteryInfo(filepath: String): Double? {
+    private fun batteryInfo(filepath: String, CURRENT_NOW: String): Double? {
         if (RootFile.fileExists(filepath)) {
             try {
                 val batteryInfos = KernelProrp.getProp(filepath)
@@ -522,7 +522,7 @@ class FloatMonitor(private val mContext: Context) {
                 }
 
                 val voltageStr = powerSupplyData["POWER_SUPPLY_VOLTAGE_NOW"]
-                val currentStr = powerSupplyData["POWER_SUPPLY_CURRENT_NOW"]
+                val currentStr = powerSupplyData[CURRENT_NOW]
 
                 if (voltageStr == null || currentStr == null) {
                     return null
@@ -544,10 +544,10 @@ class FloatMonitor(private val mContext: Context) {
     @SuppressLint("DefaultLocale")
     private fun calculatePower(): String? {
         var filePath = "/sys/class/power_supply/battery/uevent"
-        var calculate = batteryInfo(filePath)
+        var calculate = batteryInfo(filePath, "POWER_SUPPLY_CURRENT_NOW")
         if (calculate == -999.0) {
             filePath = "/sys/class/power_supply/usb/uevent"
-            calculate = batteryInfo(filePath)
+            calculate = batteryInfo(filePath, "POWER_SUPPLY_INPUT_CURRENT_NOW")
             if (calculate != null) {
                 return String.format("#PWR  +%.2fW", calculate)
             }
