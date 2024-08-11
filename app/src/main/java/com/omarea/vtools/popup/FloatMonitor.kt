@@ -237,6 +237,7 @@ class FloatMonitor(private val mContext: Context) {
 
     private val fpsUtils = FpsUtils()
     private var batteryManager: BatteryManager? = null
+    private var isUsbConnected = false
 
     private fun whiteBoldSpan(text: String): SpannableString {
         return SpannableString(text).apply {
@@ -506,55 +507,59 @@ class FloatMonitor(private val mContext: Context) {
         }
     }
 
-    private fun batteryInfo(filepath: String, CURRENT_NOW: String): Double? {
-        if (RootFile.fileExists(filepath)) {
-            try {
-                val batteryInfos = KernelProrp.getProp(filepath)
-                val infos =
-                    batteryInfos.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+    private fun batteryInfo(filepath: String, currentNowKey: String): Double? {
+        if (!RootFile.fileExists(filepath)) return null
 
-                val powerSupplyData: MutableMap<String, String> = HashMap()
-                for (info in infos) {
-                    val parts = info.split("=".toRegex())
-                    if (parts.size == 2) {
-                        powerSupplyData[parts[0]] = parts[1]
-                    }
-                }
+        return try {
+            val powerSupplyData = KernelProrp.getProp(filepath)
+                .lineSequence()
+                .mapNotNull { it.split("=").takeIf { parts -> parts.size == 2 } }
+                .associate { it[0] to it[1] }
 
-                val voltageStr = powerSupplyData["POWER_SUPPLY_VOLTAGE_NOW"]
-                val currentStr = powerSupplyData[CURRENT_NOW]
+            val voltage = powerSupplyData["POWER_SUPPLY_VOLTAGE_NOW"]?.toDoubleOrNull()?.div(1e6)
+            val current = powerSupplyData[currentNowKey]?.toDoubleOrNull()?.div(1e6)
 
-                if (voltageStr == null || currentStr == null) {
-                    return null
-                }
-
-                val voltage = voltageStr.toDouble() / 1e6
-                val current = currentStr.toDouble() / 1e6
+            if (voltage != null && current != null) {
                 if (current < 0.0) {
-                    return -999.0
+                    isUsbConnected = true
+                    -999.0
+                } else {
+                    isUsbConnected = false
+                    voltage * current
                 }
-                return voltage * current
-            } catch (e: NumberFormatException) {
-                return null
+            } else {
+                null
             }
+        } catch (e: NumberFormatException) {
+            null
         }
-        return null
     }
 
     @SuppressLint("DefaultLocale")
     private fun calculatePower(): String? {
-        var filePath = "/sys/class/power_supply/battery/uevent"
-        var calculate = batteryInfo(filePath, "POWER_SUPPLY_CURRENT_NOW")
-        if (calculate == -999.0) {
-            filePath = "/sys/class/power_supply/usb/uevent"
-            calculate = batteryInfo(filePath, "POWER_SUPPLY_INPUT_CURRENT_NOW")
-            if (calculate != null) {
-                return String.format("#PWR  +%.2fW", calculate)
-            }
+        val filePath = if (isUsbConnected) {
+            "/sys/class/power_supply/usb/uevent"
+        } else {
+            "/sys/class/power_supply/battery/uevent"
         }
-        if (calculate == null) {
-            return calculate
+
+        val currentKey = if (isUsbConnected) {
+            "POWER_SUPPLY_INPUT_CURRENT_NOW"
+        } else {
+            "POWER_SUPPLY_CURRENT_NOW"
         }
-        return String.format("#PWR  -%.2fW", calculate)
+
+        var power = batteryInfo(filePath, currentKey)
+
+        if (power == -999.0) {
+            power = batteryInfo("/sys/class/power_supply/usb/uevent",
+                "POWER_SUPPLY_INPUT_CURRENT_NOW")
+            return power?.let { String.format("#PWR  +%.2fW", it) }
+        }
+
+        return power?.let {
+            String.format("#PWR  %+.2fW", if (isUsbConnected) it else -it)
+        }
     }
+
 }
