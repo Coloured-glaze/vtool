@@ -3,6 +3,7 @@ package com.omarea.common.ui
 import android.app.Activity
 import android.app.Dialog
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Handler
 import android.os.Looper
 import android.renderscript.Allocation
@@ -21,15 +22,25 @@ class BlurBackground(private val activity: Activity) {
     private var mHandler: Handler = Handler(Looper.getMainLooper())
 
     private fun captureScreen(activity: Activity): Bitmap? {
-        activity.window.decorView.destroyDrawingCache() //先清理屏幕绘制缓存(重要)
-        activity.window.decorView.isDrawingCacheEnabled = true
-        var bmp: Bitmap = activity.window.decorView.drawingCache
-        //获取原图尺寸
-        originalW = bmp.getWidth()
-        originalH = bmp.getHeight()
-        //对原图进行缩小，提高下一步高斯模糊的效率
-        bmp = Bitmap.createScaledBitmap(bmp, originalW / 4, originalH / 4, false)
-        return bmp
+        // 获取窗口的根视图
+        val rootView: View = activity.window.decorView.findViewById(android.R.id.content)
+
+        // 创建一个与视图相同大小的位图
+        val bitmap = Bitmap.createBitmap(rootView.width, rootView.height, Bitmap.Config.ARGB_8888)
+
+        // 创建一个 Canvas 对象并将其与位图关联
+        val canvas = Canvas(bitmap)
+
+        // 将视图绘制到 Canvas 上
+        rootView.draw(canvas)
+
+        // 对位图进行缩小，提高下一步高斯模糊的效率
+        val scaledBitmap = Bitmap.createScaledBitmap(bitmap, bitmap.width / 4, bitmap.height / 4, false)
+
+        // 回收原始位图
+        bitmap.recycle()
+
+        return scaledBitmap
     }
 
     private fun asyncRefresh(`in`: Boolean) {
@@ -106,9 +117,9 @@ class BlurBackground(private val activity: Activity) {
 
             bp = blur(bp) //对屏幕截图模糊处理
             //将模糊处理后的图恢复到原图尺寸并显示出来
-            bp = Bitmap.createScaledBitmap(bp, originalW, originalH, false)
+            bp = Bitmap.createScaledBitmap(bp!!, originalW, originalH, false)
             setImageBitmap(bp)
-            setVisibility(View.VISIBLE)
+            visibility = View.VISIBLE
             //防止UI线程阻塞，在子线程中让背景实现淡入效果
             asyncRefresh(true)
         }

@@ -2,9 +2,11 @@
 
 
 buildscript {
-    ext.kotlin_version = '1.4.10' // 1.9.0, 1.6.10, 1.4.10
+    ext.kotlin_version = '1.9.0' // 1.9.0, 1.6.10, 1.4.10
     ext.gradle_version = '7.1.2' // 7.1.2, 7.0.0, 4.0.1
     repositories {
+
+        maven { url 'https://maven.aliyun.com/repository/google' }
         maven { url 'https://maven.aliyun.com/repository/public' }
 
         google()
@@ -22,9 +24,10 @@ buildscript {
 
 allprojects {
     repositories {
-        maven { url 'https://jitpack.io' }
-        maven { url 'https://repo.maven.apache.org/maven2/' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
         maven { url 'https://maven.aliyun.com/repository/public' }
+//        maven { url 'https://jitpack.io' }
+//        maven { url 'https://repo.maven.apache.org/maven2/' }
         // maven { url 'https://mirrors.cloud.tencent.com/nexus/repository/maven-public/' }
         // maven { url 'https://repo.huaweicloud.com/repository/maven/' }
         // maven { url 'https://mirrors.tuna.tsinghua.edu.cn/maven/' }
