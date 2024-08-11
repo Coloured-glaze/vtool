@@ -1,3 +1,4 @@
+
 if [[ -d /sys/fs/cgroup ]]; then
   scene_memcg="/sys/fs/cgroup/memory"
 elif [[ -d /dev/memcg ]]; then

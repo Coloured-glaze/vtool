@@ -39,8 +39,8 @@ jobs:
     - name: Build with Gradle
       run: |
         ./gradlew assembleRelease --info --warning-mode all
-      # ./gradlew build
       # ./gradlew assembleDebug --stacktrace --info --warning-mode all
+      # ./gradlew build
 
     - id: tag
       run: |

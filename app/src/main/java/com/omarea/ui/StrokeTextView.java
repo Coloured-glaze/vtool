@@ -14,7 +14,7 @@ import android.widget.TextView;
  * 实现方法是两个TextView叠加,只有描边的TextView为底,实体TextView叠加在上面
  * 看上去文字就有个不同颜色的边框了
  */
-public class StrokeTextView extends TextView {
+public class StrokeTextView extends androidx.appcompat.widget.AppCompatTextView {
 
     private TextView borderText = null;///用于描边的TextView
 
