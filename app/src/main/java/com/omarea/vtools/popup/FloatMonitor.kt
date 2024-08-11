@@ -25,19 +25,25 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import com.omarea.Scene
+import com.omarea.common.shell.KernelProrp
+import com.omarea.common.shell.RootFile
 import com.omarea.data.GlobalStatus
 import com.omarea.library.shell.*
 import com.omarea.store.SpfConfig
 import com.omarea.ui.FloatMonitorBatteryView
 import com.omarea.ui.FloatMonitorChartView
 import com.omarea.vtools.R
+import java.io.BufferedReader
+import java.io.FileReader
+import java.io.IOException
 import java.util.*
 
 class FloatMonitor(private val mContext: Context) {
     private var cpuLoadUtils = CpuLoadUtils()
     private var CpuFrequencyUtil = CpuFrequencyUtils()
 
-    private val globalSPF = mContext.getSharedPreferences(SpfConfig.GLOBAL_SPF, Context.MODE_PRIVATE)
+    private val globalSPF =
+        mContext.getSharedPreferences(SpfConfig.GLOBAL_SPF, Context.MODE_PRIVATE)
 
     /**
      * 显示弹出框
@@ -52,7 +58,11 @@ class FloatMonitor(private val mContext: Context) {
         }
 
         if (Build.VERSION.SDK_INT >= 23 && !Settings.canDrawOverlays(mContext)) {
-            Toast.makeText(mContext, mContext.getString(R.string.permission_float), Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                mContext,
+                mContext.getString(R.string.permission_float),
+                Toast.LENGTH_LONG
+            ).show()
             return false
         }
 
@@ -63,7 +73,8 @@ class FloatMonitor(private val mContext: Context) {
         val view = setUpView(mContext)
 
         val params = LayoutParams()
-        val monitorStorage = mContext.getSharedPreferences("float_monitor_storage", Context.MODE_PRIVATE)
+        val monitorStorage =
+            mContext.getSharedPreferences("float_monitor_storage", Context.MODE_PRIVATE)
 
         // 类型
         params.type = LayoutParams.TYPE_SYSTEM_ALERT
@@ -81,10 +92,12 @@ class FloatMonitor(private val mContext: Context) {
         params.x = monitorStorage.getInt("x", 0)
         params.y = monitorStorage.getInt("y", 0)
 
-        params.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL or LayoutParams.FLAG_NOT_FOCUSABLE or LayoutParams.FLAG_FULLSCREEN
+        params.flags =
+            LayoutParams.FLAG_NOT_TOUCH_MODAL or LayoutParams.FLAG_NOT_FOCUSABLE or LayoutParams.FLAG_FULLSCREEN
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            params.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+            params.layoutInDisplayCutoutMode =
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
         }
 
         val navHeight = 0
@@ -118,7 +131,8 @@ class FloatMonitor(private val mContext: Context) {
                         } else {
                             lastClickTime = System.currentTimeMillis()
                         }
-                    } catch (ex: Exception) {}
+                    } catch (ex: Exception) {
+                    }
                 }
 
                 @SuppressLint("ClickableViewAccessibility")
@@ -133,6 +147,7 @@ class FloatMonitor(private val mContext: Context) {
                                 isTouchDown = true
                                 touchStartTime = System.currentTimeMillis()
                             }
+
                             MotionEvent.ACTION_MOVE -> {
                                 if (isTouchDown) {
                                     params.x = (event.rawX - touchStartX).toInt()
@@ -140,12 +155,14 @@ class FloatMonitor(private val mContext: Context) {
                                     mWindowManager!!.updateViewLayout(v, params)
                                 }
                             }
+
                             MotionEvent.ACTION_UP -> {
                                 if (System.currentTimeMillis() - touchStartTime < 180) {
                                     if (Math.abs(event.rawX - touchStartRawX) < 15 && Math.abs(event.rawY - touchStartRawY) < 15) {
                                         onClick()
                                     } else {
-                                        monitorStorage.edit().putInt("x", params.x).putInt("y", params.y).apply()
+                                        monitorStorage.edit().putInt("x", params.x)
+                                            .putInt("y", params.y).apply()
                                     }
                                 }
                                 isTouchDown = false
@@ -153,6 +170,7 @@ class FloatMonitor(private val mContext: Context) {
                                     return true
                                 }
                             }
+
                             MotionEvent.ACTION_OUTSIDE,
                             MotionEvent.ACTION_CANCEL -> {
                                 isTouchDown = false
@@ -221,20 +239,25 @@ class FloatMonitor(private val mContext: Context) {
 
     private fun whiteBoldSpan(text: String): SpannableString {
         return SpannableString(text).apply {
-            setSpan(ForegroundColorSpan(Color.WHITE), 0, text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            setSpan(
+                ForegroundColorSpan(Color.WHITE),
+                0,
+                text.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
             setSpan(StyleSpan(Typeface.BOLD), 0, text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
     }
 
     private var configSpf: SharedPreferences? = null
     private val config: SharedPreferences
-        get () {
+        get() {
             if (configSpf == null) {
                 val soc = PlatformUtils().getCPUName()
                 configSpf = mContext.getSharedPreferences(soc, Context.MODE_PRIVATE)
             }
             return configSpf!!
-    }
+        }
 
     private fun updateInfo() {
         if (coreCount < 1) {
@@ -272,9 +295,13 @@ class FloatMonitor(private val mContext: Context) {
         }
 
         // 电池电流
-        val batteryCurrentNow = batteryManager?.getLongProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW)
+        val batteryCurrentNow =
+            batteryManager?.getLongProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW)
         val batteryCurrentNowMa = if (batteryCurrentNow != null) {
-            (batteryCurrentNow / globalSPF.getInt(SpfConfig.GLOBAL_SPF_CURRENT_NOW_UNIT, SpfConfig.GLOBAL_SPF_CURRENT_NOW_UNIT_DEFAULT))
+            (batteryCurrentNow / globalSPF.getInt(
+                SpfConfig.GLOBAL_SPF_CURRENT_NOW_UNIT,
+                SpfConfig.GLOBAL_SPF_CURRENT_NOW_UNIT_DEFAULT
+            ))
         } else {
             null
         }
@@ -297,13 +324,22 @@ class FloatMonitor(private val mContext: Context) {
                     append("\n")
                 }
 
+                val tempText = getTemp()
+                if (tempText != null) {
+                    append(whiteBoldSpan(tempText))
+                    append("\n")
+                }
+
                 for ((clusterIndex, cluster) in clusters.withIndex()) {
                     if (clusterIndex != 0) {
                         append("\n")
                     }
                     if (cluster.isNotEmpty()) {
                         try {
-                            val title = "#" + cluster[0] + "~" + cluster[cluster.size - 1] + "  " + subFreqStr(clustersFreq.get(clusterIndex)) + "Mhz";
+                            val title =
+                                "#" + cluster[0] + "~" + cluster[cluster.size - 1] + "  " + subFreqStr(
+                                    clustersFreq.get(clusterIndex)
+                                ) + "Mhz";
                             append(whiteBoldSpan(title))
 
                             val otherInfos = StringBuilder("")
@@ -330,6 +366,12 @@ class FloatMonitor(private val mContext: Context) {
                     append(whiteBoldSpan("#FPS  $this"))
                 }
 
+                val powerText = calculatePower()
+                if (powerText != null) {
+                    append(whiteBoldSpan(powerText))
+                    append("\n")
+                }
+
                 batteryCurrentNowMa?.run {
                     if (this > -20000 && this < 20000) {
                         append("\n")
@@ -338,6 +380,7 @@ class FloatMonitor(private val mContext: Context) {
                         append(whiteBoldSpan(batteryInfo))
                     }
                 }
+
             }
         }
 
@@ -361,11 +404,12 @@ class FloatMonitor(private val mContext: Context) {
             temperatureChart!!.setData(100f, 100f - GlobalStatus.batteryCapacity, temperature)
             temperatureText!!.setText(temperature.toString() + "°C")
             batteryLevelText!!.setText(GlobalStatus.batteryCapacity.toString() + "%")
-            chargerView!!.visibility = (if (GlobalStatus.batteryStatus == BatteryManager.BATTERY_STATUS_CHARGING) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            })
+            chargerView!!.visibility =
+                (if (GlobalStatus.batteryStatus == BatteryManager.BATTERY_STATUS_CHARGING) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                })
         }
     }
 
@@ -388,7 +432,8 @@ class FloatMonitor(private val mContext: Context) {
         if (show!! && null != mView) {
             try {
                 mWindowManager?.removeViewImmediate(mView)
-            } catch (ex: Exception) {}
+            } catch (ex: Exception) {
+            }
             mView = null
             show = false
         }
@@ -417,10 +462,13 @@ class FloatMonitor(private val mContext: Context) {
             try {
                 otherInfo?.visibility = if (showOtherInfo) View.GONE else View.VISIBLE
                 // it.findViewById<View>(R.id.fw_ram_info).visibility = if (showOtherInfo) View.GONE else View.VISIBLE
-                it.findViewById<LinearLayout>(R.id.fw_chart_list).orientation = if (showOtherInfo) LinearLayout.HORIZONTAL else LinearLayout.VERTICAL
-                (mView as LinearLayout).orientation = if (showOtherInfo) LinearLayout.VERTICAL else LinearLayout.HORIZONTAL
+                it.findViewById<LinearLayout>(R.id.fw_chart_list).orientation =
+                    if (showOtherInfo) LinearLayout.HORIZONTAL else LinearLayout.VERTICAL
+                (mView as LinearLayout).orientation =
+                    if (showOtherInfo) LinearLayout.VERTICAL else LinearLayout.HORIZONTAL
                 showOtherInfo = !showOtherInfo
-            } catch (ex: Exception) {}
+            } catch (ex: Exception) {
+            }
         }
 
         return view!!
@@ -433,5 +481,77 @@ class FloatMonitor(private val mContext: Context) {
         @SuppressLint("StaticFieldLeak")
         private var mView: View? = null
         private var timer: Timer? = null
+    }
+
+    @SuppressLint("DefaultLocale")
+    private fun getTemp(): String? {
+        val cpu1 = "/sys/devices/virtual/thermal/thermal_zone1/temp"
+        val cpu8 = "/sys/devices/virtual/thermal/thermal_zone8/temp"
+        try {
+            val bufferedReader = BufferedReader(FileReader(cpu1))
+            val bufferedReader7 = BufferedReader(FileReader(cpu8))
+
+            val readline1 = bufferedReader.readLine()
+            val readline8 = bufferedReader7.readLine()
+
+            bufferedReader.close()
+            bufferedReader7.close()
+
+            val temp1 = readline1.toDouble() / 1000.0
+            val temp8 = readline8.toDouble() / 1000.0
+
+            return String.format("#CPU  %.1f°C\n", ((temp1 + temp8) / 2))
+        } catch (e: IOException) {
+            return null
+        }
+    }
+
+    private fun batteryInfo(filepath: String): DoubleArray {
+        if (RootFile.fileExists(filepath)) {
+            val batteryInfos = KernelProrp.getProp(filepath)
+            val infos =
+                batteryInfos.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+
+            val powerSupplyData: MutableMap<String, String> = HashMap()
+            for (info in infos) {
+                val parts = info.split("=".toRegex())
+                if (parts.size == 2) {
+                    powerSupplyData[parts[0]] = parts[1]
+                }
+            }
+
+            val voltageStr = powerSupplyData["POWER_SUPPLY_VOLTAGE_NOW"]
+            val currentStr = powerSupplyData["POWER_SUPPLY_CURRENT_NOW"]
+
+            if (voltageStr == null || currentStr == null  ) {
+                return doubleArrayOf()
+            }
+
+            try {
+                val electricity = currentStr.toDouble() / 1e6
+                val voltage = voltageStr.toDouble() / 1e6
+                return doubleArrayOf(voltage, electricity)
+            } catch (e: NumberFormatException) {
+                return doubleArrayOf()
+            }
+        }
+        return doubleArrayOf()
+    }
+
+    @SuppressLint("DefaultLocale")
+    private fun calculatePower(): String? {
+        var filePath = "/sys/class/power_supply/battery/uevent"
+        var data = batteryInfo(filePath)
+        if (data.isNotEmpty()) {
+            if (data[1] < 0) {
+                filePath = "/sys/class/power_supply/usb/uevent"
+                data = batteryInfo(filePath)
+                if (data.isNotEmpty()) {
+                    return String.format("\n#PWR  +%.2fW", data[0] * data[1])
+                }
+            }
+            return String.format("\n#PWR  -%.2fW", data[0] * data[1])
+        }
+        return null
     }
 }
