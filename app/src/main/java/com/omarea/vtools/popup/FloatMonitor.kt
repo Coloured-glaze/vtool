@@ -37,6 +37,7 @@ import java.io.BufferedReader
 import java.io.FileReader
 import java.io.IOException
 import java.util.*
+import kotlin.collections.ArrayList
 
 class FloatMonitor(private val mContext: Context) {
     private var cpuLoadUtils = CpuLoadUtils()
@@ -368,14 +369,13 @@ class FloatMonitor(private val mContext: Context) {
 
                 val powerText = calculatePower()
                 if (powerText != null) {
-                    append(whiteBoldSpan(powerText))
                     append("\n")
+                    append(whiteBoldSpan(powerText))
                 }
 
                 batteryCurrentNowMa?.run {
                     if (this > -20000 && this < 20000) {
                         append("\n")
-
                         val batteryInfo = "#BAT  " + (if (this > 0) ("+" + this) else this) + "mA"
                         append(whiteBoldSpan(batteryInfo))
                     }
@@ -500,58 +500,61 @@ class FloatMonitor(private val mContext: Context) {
             val temp1 = readline1.toDouble() / 1000.0
             val temp8 = readline8.toDouble() / 1000.0
 
-            return String.format("#CPU  %.1f°C\n", ((temp1 + temp8) / 2))
+            return String.format("#CPU  %.1f°C", ((temp1 + temp8) / 2))
         } catch (e: IOException) {
             return null
         }
     }
 
-    private fun batteryInfo(filepath: String): DoubleArray {
+    private fun batteryInfo(filepath: String): Double? {
         if (RootFile.fileExists(filepath)) {
-            val batteryInfos = KernelProrp.getProp(filepath)
-            val infos =
-                batteryInfos.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-
-            val powerSupplyData: MutableMap<String, String> = HashMap()
-            for (info in infos) {
-                val parts = info.split("=".toRegex())
-                if (parts.size == 2) {
-                    powerSupplyData[parts[0]] = parts[1]
-                }
-            }
-
-            val voltageStr = powerSupplyData["POWER_SUPPLY_VOLTAGE_NOW"]
-            val currentStr = powerSupplyData["POWER_SUPPLY_CURRENT_NOW"]
-
-            if (voltageStr == null || currentStr == null  ) {
-                return doubleArrayOf()
-            }
-
             try {
-                val electricity = currentStr.toDouble() / 1e6
+                val batteryInfos = KernelProrp.getProp(filepath)
+                val infos =
+                    batteryInfos.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+
+                val powerSupplyData: MutableMap<String, String> = HashMap()
+                for (info in infos) {
+                    val parts = info.split("=".toRegex())
+                    if (parts.size == 2) {
+                        powerSupplyData[parts[0]] = parts[1]
+                    }
+                }
+
+                val voltageStr = powerSupplyData["POWER_SUPPLY_VOLTAGE_NOW"]
+                val currentStr = powerSupplyData["POWER_SUPPLY_CURRENT_NOW"]
+
+                if (voltageStr == null || currentStr == null) {
+                    return null
+                }
+
                 val voltage = voltageStr.toDouble() / 1e6
-                return doubleArrayOf(voltage, electricity)
+                val current = currentStr.toDouble() / 1e6
+                if (current < 0.0) {
+                    return -999.0
+                }
+                return voltage * current
             } catch (e: NumberFormatException) {
-                return doubleArrayOf()
+                return null
             }
         }
-        return doubleArrayOf()
+        return null
     }
 
     @SuppressLint("DefaultLocale")
     private fun calculatePower(): String? {
         var filePath = "/sys/class/power_supply/battery/uevent"
-        var data = batteryInfo(filePath)
-        if (data.isNotEmpty()) {
-            if (data[1] < 0) {
-                filePath = "/sys/class/power_supply/usb/uevent"
-                data = batteryInfo(filePath)
-                if (data.isNotEmpty()) {
-                    return String.format("\n#PWR  +%.2fW", data[0] * data[1])
-                }
+        var calculate = batteryInfo(filePath)
+        if (calculate == -999.0) {
+            filePath = "/sys/class/power_supply/usb/uevent"
+            calculate = batteryInfo(filePath)
+            if (calculate != null) {
+                return String.format("#PWR  +%.2fW", calculate)
             }
-            return String.format("\n#PWR  -%.2fW", data[0] * data[1])
         }
-        return null
+        if (calculate == null) {
+            return calculate
+        }
+        return String.format("#PWR  -%.2fW", calculate)
     }
 }
