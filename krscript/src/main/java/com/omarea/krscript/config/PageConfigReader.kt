@@ -622,7 +622,7 @@ class PageConfigReader {
                         }
                     }
                 }
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
             }
         }
         textRow.text = "" + parser.nextText()
