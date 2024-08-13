@@ -60,6 +60,10 @@ jobs:
 
     - name: Build with Gradle
       run: |
+        java -version
+        gradle --version
+        cmake --version
+        gcc --version
         ./gradlew assembleRelease
       # build assembleDebug --stacktrace --info --debug --warning-mode all
 
