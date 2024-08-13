@@ -1,4 +1,4 @@
-name: Android Release v2
+name: Release
 
 on: workflow_dispatch
 
@@ -7,7 +7,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
     - name: Checkout sources
@@ -25,7 +25,7 @@ jobs:
     - name: Install Android SDK
       run: |
         sudo apt-get update
-        sudo apt-get install -y wget unzip libncurses5
+        sudo apt-get install -y wget unzip
 
         wget -P . -q --show-progress https://dl.google.com/android/repository/commandlinetools-linux-9123335_latest.zip
         mkdir -p $HOME/sdk/
@@ -33,10 +33,9 @@ jobs:
 
         echo "===> ls $HOME/sdk/ :" && ls $HOME/sdk/
 
-        mkdir -p $HOME/sdk/tmp
-        mv $HOME/sdk/cmdline-tools/* $HOME/sdk/tmp/
-        mkdir -p $HOME/sdk/cmdline-tools/latest
-        mv $HOME/sdk/tmp/* $HOME/sdk/cmdline-tools/latest/
+        mv $HOME/sdk/cmdline-tools $HOME/sdk/latest
+        mkdir -p $HOME/sdk/cmdline-tools
+        mv $HOME/sdk/latest $HOME/sdk/cmdline-tools/
 
         echo "===> ls $HOME/sdk/cmdline-tools/latest/bin/ :" && ls $HOME/sdk/cmdline-tools/latest/bin/
 
