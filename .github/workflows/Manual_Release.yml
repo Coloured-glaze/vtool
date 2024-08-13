@@ -51,8 +51,7 @@ jobs:
         yes | sdkmanager --licenses
         echo "===> sdkmanager install <===" && \
         sdkmanager "platforms;android-30" "platforms;android-29" "platforms;android-28" \
-        "build-tools;30.0.3" "build-tools;29.0.2" "build-tools;28.0.2" \
-        "platform-tools" "ndk;24.0.8215888"
+        "build-tools;30.0.3" "build-tools;29.0.2" "build-tools;28.0.2" "platform-tools" "ndk;24.0.8215888"
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
@@ -60,7 +59,7 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
       with:
-        cache-read-only: true
+        cache-read-only: false
 
     - name: Build with Gradle
       run: |
@@ -80,7 +79,7 @@ jobs:
 
     - id: print_apk_path
       run: |
-        find ${{ github.workspace }} -name "*.apk"
+        find / -name "*.apk"
       shell: bash
 
     - id: find_apk_path
