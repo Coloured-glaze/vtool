@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.View;
 
 public class FastBlurUtility {
-
     /**
      * 获得模糊化的背景图片
      *
@@ -38,7 +37,7 @@ public class FastBlurUtility {
     }
 
 
-    // 实测性能反而更低...
+    // 实测性能反而更低... // private 方法 'blur(android.graphics.Bitmap, android.content.Context)' 从未使用
     private static Bitmap blur(Bitmap bitmap, Context context) {
         if (bitmap == null) {
             return bitmap;
