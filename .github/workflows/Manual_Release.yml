@@ -66,7 +66,7 @@ jobs:
         java -version
         cmake --version
         gcc --version
-        ./gradlew build --warning-mode all 
+        ./gradlew assembleRelease
       # build assembleDebug --stacktrace --info --debug --warning-mode all
 
     - id: tag
