@@ -77,12 +77,13 @@ jobs:
           whoami
           sudo df -h
           sudo du -sh ${{ github.workspace }}
+          env
           sudo find ${{ github.workspace }} -name "Scene_*_release.apk"
         shell: bash
 
       - id: apk_path
         run: |
-          echo "::set-output name=apk_path::$(find \${{ github.workspace }}/app/build/outputs/apk/release/ -name "Scene_*_release.apk")"
+          echo "{apk_path}={$(find \${{ github.workspace }}/app/build/outputs/apk/release/ -name "Scene_*_release.apk")}" >> $GITHUB_STATE
 
       - uses: softprops/action-gh-release@v2
         with:
