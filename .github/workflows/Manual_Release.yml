@@ -24,6 +24,16 @@ jobs:
         # temurin, zulu, adopt, adopt-hotspot, adopt-openj9, liberica, microsoft, corretto, semeru, oracle, dragonwell
         # cache: gradle
 
+      # - name: Setup Gradle
+      #   uses: gradle/actions/setup-gradle@v4
+      #   with:
+      #     cache-read-only: false
+
+    - name: Setup CMake
+      uses: lukka/get-cmake@latest
+      with:
+        cmakeVersion: 3.25.2
+
     - name: Install Android SDK
       run: |
         sudo apt-get update > /dev/null 
@@ -58,15 +68,10 @@ jobs:
         yes | sdkmanager --licenses || true
         echo "===> sdkmanager install <===" && \
         yes | sdkmanager --install "platforms;android-30" "build-tools;30.0.3" "platform-tools" || true && \
-        yes | sdkmanager --install "ndk;24.0.8215888" "cmake;3.22.1" || true
+        yes | sdkmanager --install "ndk;24.0.8215888" || true
 
         chmod +x gradlew
       shell: bash
-
-    # - name: Setup Gradle
-    #   uses: gradle/actions/setup-gradle@v4
-    #   with:
-    #     cache-read-only: false
 
     - name: Cache Gradle packages
       uses: actions/cache@v3
@@ -75,7 +80,7 @@ jobs:
           /home/runner/gradle_home
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/gradle-wrapper.properties', '**/gradle-wrapper.jar') }}
         restore-keys: |
-          ${{ runner.os }}-gradle-
+          ${{ runner.os }}-gradle
 
     - name: Build with Gradle
       run: |
