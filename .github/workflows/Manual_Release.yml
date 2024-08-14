@@ -48,9 +48,10 @@ jobs:
         echo "sdk.dir=$HOME/sdk" >> local.properties
         echo "ndk.dir=$HOME/sdk/ndk/24.0.8215888" >> local.properties
 
-        echo y | sdkmanager --licenses
         echo "===> sdkmanager install <==="
-        echo y | sdkmanager --install "platforms;android-30" "build-tools;30.0.3" "platform-tools" "ndk;24.0.8215888"
+        yes | sdkmanager --licenses
+        sdkmanager "platforms;android-30" "build-tools;30.0.3" "platform-tools" "ndk;24.0.8215888"
+      shell: bash
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
@@ -80,18 +81,17 @@ jobs:
         whoami
         sudo df -h
         sudo du -sh ${{ github.workspace }}
-        sudo ls -a / 
-        sudo find /home/ -name "*.apk"
+        sudo find ${{ github.workspace }} -name "Scene_*_release.apk"
       shell: bash
 
-    - id: find_apk_path
+    - id: apk_path
       run: |
-        echo "::set-output name=apk_path::$(find \${{ github.workspace }} -name "Scene_*_release.apk")"
+        echo "::set-output name=apk_path::$(find \${{ github.workspace }}/app/build/outputs/apk/release/ -name "Scene_*_release.apk")"
 
     - uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ steps.tag.outputs.release_tag }}
         files: |
-          ${{ steps.find_apk_path.outputs.apk_path }}
+          ${{ steps.apk_path.outputs.apk_path }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
