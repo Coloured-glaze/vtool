@@ -68,6 +68,9 @@ jobs:
       with:
         path: |
           $HOME/gradle_home
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/gradle-wrapper.properties', '**/gradle-wrapper.jar') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
 
     - name: Build with Gradle
       run: |
@@ -89,9 +92,10 @@ jobs:
         whoami
         sudo df -h
         sudo du -sh ${{ github.workspace }}
-        echo "apk_path=$(find ${{ github.workspace }} -name "Scene_*_release.apk")" >> "$GITHUB_OUTPUT"
+        apk_path=$(find ${{ github.workspace }}/app/ -name "Scene_*_release.apk")
+        echo "apk_path=$apk_path" >> "$GITHUB_OUTPUT"
         env
-        echo ${apk_path}
+        echo $apk_path
       shell: bash
 
     - uses: softprops/action-gh-release@v2
