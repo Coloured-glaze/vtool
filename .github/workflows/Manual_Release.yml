@@ -13,13 +13,13 @@ jobs:
     - name: Checkout sources
       uses: actions/checkout@v4
       # with:
-      # ref: dev
+      #   ref: dev
       # submodules: true
 
     - name: Setup Java 11
       uses: actions/setup-java@v4
       with:
-        distribution: 'adopt'
+        distribution: 'microsoft'
         java-version: 11
         # temurin, zulu, adopt, adopt-hotspot, adopt-openj9, liberica, microsoft, corretto, semeru, oracle, dragonwell
         # cache: gradle
@@ -83,7 +83,8 @@ jobs:
         whoami
         sudo df -h
         sudo du -sh ${{ github.workspace }}
-        sudo find ${{ github.workspace }} -name "Scene_*_release.apk"
+        env
+        find ${{ github.workspace }} -name "Scene_*_release.apk"
       shell: bash
 
     - id: apk_path
