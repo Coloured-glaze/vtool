@@ -1,4 +1,4 @@
-name: Release Manual
+name: Manual Release
 
 on: workflow_dispatch
 
@@ -42,7 +42,7 @@ jobs:
 
         echo "===> ls $HOME/sdk/cmdline-tools/latest/bin/ :" && ls $HOME/sdk/cmdline-tools/latest/bin/
 
-        export GRADLE_USER_HOME = $HOME/gradle_home
+        export GRADLE_USER_HOME=$HOME/gradle_home
         export ANDROID_HOME=$HOME/sdk
         export ANDROID_SDK_ROOT=$HOME/sdk
         export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
