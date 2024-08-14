@@ -29,10 +29,10 @@ jobs:
       #   with:
       #     cache-read-only: false
 
-    - name: Setup CMake
-      uses: lukka/get-cmake@latest
-      with:
-        cmakeVersion: 3.25.2
+#    - name: Setup CMake
+#      uses: lukka/get-cmake@latest
+#      with:
+#        cmakeVersion: 3.10.2
 
     - name: Install Android SDK
       run: |
