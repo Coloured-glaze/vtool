@@ -48,9 +48,9 @@ jobs:
         echo "sdk.dir=$HOME/sdk" >> local.properties
         echo "ndk.dir=$HOME/sdk/ndk/24.0.8215888" >> local.properties
 
-        echo "===> sdkmanager install <==="
         echo "yes\nyes\nyes\nyes\nyes\nyes" | sdkmanager --licenses
-        sdkmanager "platforms;android-30" "build-tools;30.0.3" "platform-tools" "ndk;24.0.8215888"
+        echo "===> sdkmanager install <===" && \
+        echo "yes" | sdkmanager --install "platforms;android-30" "build-tools;30.0.3" "platform-tools" "ndk;24.0.8215888"
       shell: bash
 
     - name: Grant execute permission for gradlew
