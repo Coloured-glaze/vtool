@@ -75,7 +75,7 @@ jobs:
       run: |
         tag=$(date +"v%Y-%m-%d-%H-%M")
         echo "Generated release tag: $tag"
-        echo "::set-output name=release_tag::$tag"
+        echo "release_tag=${tag}" >> "$GITHUB_OUTPUT"
       # Format date as vYYYY-MM-DD-HH-MM
 
     - id: print_apk_path
@@ -83,7 +83,7 @@ jobs:
         whoami
         sudo df -h
         sudo du -sh ${{ github.workspace }}
-        echo "apk_path=$(find ${{ github.workspace }} -name "Scene_*_release.apk")" >> $GITHUB_ENV 
+        echo "apk_path=$(find ${{ github.workspace }} -name "Scene_*_release.apk")" >> "$GITHUB_OUTPUT"
         env
         echo ${apk_path}
       shell: bash
@@ -92,6 +92,6 @@ jobs:
       with:
         tag_name: ${{ steps.tag.outputs.release_tag }}
         files: |
-          ${apk_path}
+          ${{ steps.print_apk_path.outputs.apk_path }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
