@@ -26,10 +26,11 @@ jobs:
 
     - name: Install Android SDK
       run: |
-        sudo apt-get update
-        sudo apt-get install -y wget unzip
+        sudo apt-get update > /dev/null 
+        sudo apt-get install -y wget unzip > /dev/null 
 
-        wget -P . -q --show-progress https://dl.google.com/android/repository/commandlinetools-linux-9123335_latest.zip
+        wget -O "commandlinetools-linux-9123335_latest.zip" \
+          https://dl.google.com/android/repository/commandlinetools-linux-9123335_latest.zip > /dev/null 2>&1 
         mkdir -p $HOME/sdk/
         unzip -qod $HOME/sdk/ commandlinetools-linux-9123335_latest.zip
 
@@ -41,6 +42,7 @@ jobs:
 
         echo "===> ls $HOME/sdk/cmdline-tools/latest/bin/ :" && ls $HOME/sdk/cmdline-tools/latest/bin/
 
+        export GRADLE_USER_HOME = $HOME/gradle_home
         export ANDROID_HOME=$HOME/sdk
         export ANDROID_SDK_ROOT=$HOME/sdk
         export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
