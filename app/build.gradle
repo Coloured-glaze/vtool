@@ -83,15 +83,15 @@ android {
     externalNativeBuild {
         cmake {
             path "src/main/cpp/CMakeLists.txt"
-            version "3.10.2"
+//            version "3.10.2"
         }
     }
-    ndkVersion '24.0.8215888'
+//    ndkVersion '24.0.8215888'
     android.ndkVersion '24.0.8215888'
 
-    lintOptions {
-        abortOnError false 
-    }
+//    lintOptions {
+//        abortOnError false
+//    }
 }
 
 dependencies {
