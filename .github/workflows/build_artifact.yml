@@ -12,8 +12,8 @@ jobs:
     steps:
     - name: Checkout sources
       uses: actions/checkout@v4
-      with:
-        ref: dev
+      # with:
+      #   ref: dev
       # submodules: true
 
     - name: Setup Java 11
