@@ -65,7 +65,7 @@ class ParamsColorPicker(private val actionParamInfo: ActionParamInfo, private va
         if (colorStr != null && colorStr.isNotEmpty()) {
             try {
                 return Color.parseColor(colorStr.toString())
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
             }
         }
         return (0xff000000).toInt()
@@ -114,7 +114,7 @@ class ParamsColorPicker(private val actionParamInfo: ActionParamInfo, private va
                         textView.text = parseHexStr(alphaBar.progress, redBar.progress, greenBar.progress, blueBar.progress)
                         invalidView.visibility = View.GONE
                         preview.background = ColorDrawable(color)
-                    } catch (ex: Exception) {
+                    } catch (_: Exception) {
                     }
                     // Integer.toHexString(color) // "argb(${alphaBar.progress}, ${redBar.progress}, ${greenBar.progress}, ${blueBar.progress}, )"
                 }

@@ -25,7 +25,7 @@ android {
     defaultConfig {
         resConfigs "zh"
         applicationId "com.omarea.vtools"
-        minSdkVersion 23
+        minSdkVersion 21
         // targetSdkVersion 28
         versionCode 202111131
         versionName "4.7.3"
@@ -131,4 +131,4 @@ repositories {
     mavenCentral()
 }
 
-// git add . & git commit -m "commit" & git push -u origin main
+// git add . & git commit -m "update" & git push -u origin main

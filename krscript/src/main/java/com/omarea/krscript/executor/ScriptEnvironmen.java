@@ -17,6 +17,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -105,7 +106,7 @@ public class ScriptEnvironmen {
             return "";
         }
 
-        MessageDigest md5 = null;
+        MessageDigest md5;
         try {
             md5 = MessageDigest.getInstance("MD5");
             byte[] bytes = md5.digest(string.getBytes());
@@ -209,7 +210,7 @@ public class ScriptEnvironmen {
         }
 
         stringBuilder.append("\n\n");
-        stringBuilder.append(environmentPath + " \"" + path + "\"");
+        stringBuilder.append(environmentPath).append(" \"").append(path).append("\"");
         return privateShell.doCmdSync(stringBuilder.toString());
     }
 
@@ -285,7 +286,7 @@ public class ScriptEnvironmen {
             } else {
                 params.put("PACKAGE_VERSION_CODE", "" + packageInfo.versionCode);
             }
-        } catch (Exception ex) {
+        } catch (Exception ignored) {
         }
 
         return params;
@@ -397,9 +398,9 @@ public class ScriptEnvironmen {
             }
         }
         try {
-            dataOutputStream.write(envpCmds.toString().getBytes("UTF-8"));
+            dataOutputStream.write(envpCmds.toString().getBytes(StandardCharsets.UTF_8));
 
-            dataOutputStream.write(getExecuteScript(context, cmds, tag).getBytes("UTF-8"));
+            dataOutputStream.write(getExecuteScript(context, cmds, tag).getBytes(StandardCharsets.UTF_8));
 
             dataOutputStream.writeBytes("\n\n");
             dataOutputStream.writeBytes("sleep 0.2;\n");

@@ -101,7 +101,6 @@ jobs:
         sudo du -sh ${{ github.workspace }}
         apk_path=$(find ${{ github.workspace }}/app/ -name "Scene_*_release.apk")
         echo "apk_path=$apk_path" >> "$GITHUB_OUTPUT"
-        env
         echo $apk_path
       shell: bash
 

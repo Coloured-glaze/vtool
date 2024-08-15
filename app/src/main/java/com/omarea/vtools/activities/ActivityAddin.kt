@@ -21,11 +21,11 @@ import java.util.*
 class ActivityAddin : ActivityBase() {
     private fun createItem(title: String, desc: String, runnable: Runnable?, wran: Boolean = true): HashMap<String, Any> {
         val item = HashMap<String, Any>()
-        item.put("Title", title)
-        item.put("Desc", desc)
-        item.put("Wran", wran)
+        item["Title"] = title
+        item["Desc"] = desc
+        item["Wran"] = wran
         if (runnable != null)
-            item.put("Action", runnable)
+            item["Action"] = runnable
         return item
     }
 

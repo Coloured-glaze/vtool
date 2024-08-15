@@ -25,11 +25,11 @@ import kotlin.system.exitProcess
  * Created by helloklf on 2017/6/3.
  */
 
-public class CheckRootStatus(var context: Context, private val next: Runnable? = null, private var disableSeLinux: Boolean = false, private val skip: Runnable? = null) {
+class CheckRootStatus(var context: Context, private val next: Runnable? = null, private var disableSeLinux: Boolean = false, private val skip: Runnable? = null) {
     var myHandler: Handler = Handler(Looper.getMainLooper())
 
     var therad: Thread? = null
-    public fun forceGetRoot() {
+    fun forceGetRoot() {
         if (lastCheckResult) {
             if (next != null) {
                 myHandler.post(next)
@@ -112,7 +112,7 @@ public class CheckRootStatus(var context: Context, private val next: Runnable? =
     companion object {
         private var rootStatus = false
 
-        public fun checkRootAsync() {
+        fun checkRootAsync() {
             GlobalScope.launch(Dispatchers.IO) {
                 setRootStatus(KeepShellPublic.checkRoot())
             }
@@ -147,14 +147,14 @@ public class CheckRootStatus(var context: Context, private val next: Runnable? =
                                 // Toast.makeText(context, "Scene未获得显示悬浮窗权限", Toast.LENGTH_SHORT).show()
                                 // val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + context.getPackageName()));
                                 // context.startActivity(intent);
-                            } catch (ex: Exception) {
+                            } catch (_: Exception) {
                             }
                         }
                     } else {
                         if (!checkPermission(context, it)) {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                                 val option = it.substring("android.permission.".length)
-                                cmds.append("appops set ${context.packageName} ${option} allow\n")
+                                cmds.append("appops set ${context.packageName} $option allow\n")
                             }
                             cmds.append("pm grant ${context.packageName} $it\n")
                         }
@@ -163,7 +163,7 @@ public class CheckRootStatus(var context: Context, private val next: Runnable? =
                     if (!checkPermission(context, it)) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             val option = it.substring("android.permission.".length)
-                            cmds.append("appops set ${context.packageName} ${option} allow\n")
+                            cmds.append("appops set ${context.packageName} $option allow\n")
                         }
                         cmds.append("pm grant ${context.packageName} $it\n")
                     }

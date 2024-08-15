@@ -1,8 +1,6 @@
 package com.omarea.common.ui
 
 import android.content.Context
-import android.graphics.drawable.Drawable
-import android.util.LruCache
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -31,7 +29,7 @@ class AdapterItemChooser(private val context: Context, private var items: ArrayL
         }
 
         override fun performFiltering(constraint: CharSequence?): FilterResults {
-            val results = Filter.FilterResults()
+            val results = FilterResults()
             val prefix: String = constraint?.toString() ?: ""
 
             if (prefix.isEmpty()) {
@@ -42,7 +40,7 @@ class AdapterItemChooser(private val context: Context, private var items: ArrayL
                 results.values = list
                 results.count = list.size
             } else {
-                val prefixString = prefix.toLowerCase()
+                val prefixString = prefix.toLowerCase(Locale.ROOT)
 
                 val values: ArrayList<SelectItem>
                 synchronized(adapter.mLock) {
@@ -58,7 +56,8 @@ class AdapterItemChooser(private val context: Context, private var items: ArrayL
                     if (selected.contains(value)) {
                         newValues.add(value)
                     } else {
-                        val valueText = if (value.title == null) "" else value.title!!.toLowerCase()
+                        val valueText = if (value.title == null) "" else value.title!!.toLowerCase(
+                            Locale.ROOT)
 
                         // First match against the whole, non-splitted value
                         if (valueText.contains(prefixString)) {
@@ -118,17 +117,17 @@ class AdapterItemChooser(private val context: Context, private var items: ArrayL
         return convertView
     }
 
-    fun updateRow(position: Int, listView: OverScrollGridView, SelectItem: SelectItem) {
+    fun updateRow(position: Int, listView: OverScrollGridView, selectItem: SelectItem) {
         try {
             val visibleFirstPosi = listView.firstVisiblePosition
             val visibleLastPosi = listView.lastVisiblePosition
 
             if (position >= visibleFirstPosi && position <= visibleLastPosi) {
-                filterItems[position] = SelectItem
+                filterItems[position] = selectItem
                 val view = listView.getChildAt(position - visibleFirstPosi)
                 updateRow(position, view)
             }
-        } catch (ex: Exception) {
+        } catch (_: Exception) {
         }
     }
 

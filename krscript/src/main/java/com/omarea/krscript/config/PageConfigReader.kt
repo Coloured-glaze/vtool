@@ -15,6 +15,7 @@ import com.omarea.krscript.executor.ScriptEnvironmen
 import com.omarea.krscript.model.*
 import org.xmlpull.v1.XmlPullParser
 import java.io.InputStream
+import java.util.Locale
 
 /**
  * Created by Hello on 2018/04/01.
@@ -29,14 +30,14 @@ class PageConfigReader {
     private var parentDir: String = ""
 
     constructor(context: Context, pageConfig: String, parentDir: String?) {
-        this.context = context;
-        this.pageConfig = pageConfig;
-        this.parentDir = parentDir ?: "";
+        this.context = context
+        this.pageConfig = pageConfig
+        this.parentDir = parentDir ?: ""
     }
 
     constructor(context: Context, pageConfigStream: InputStream) {
-        this.context = context;
-        this.pageConfigStream = pageConfigStream;
+        this.context = context
+        this.pageConfigStream = pageConfigStream
     }
 
     fun readConfigXml(): ArrayList<NodeInfoBase>? {
@@ -234,9 +235,9 @@ class PageConfigReader {
                     attrName == "title" -> actionParamInfo.title = attrValue
                     attrName == "desc" -> actionParamInfo.desc = attrValue
                     attrName == "value" -> actionParamInfo.value = attrValue
-                    attrName == "type" -> actionParamInfo.type = attrValue.toLowerCase().trim { it <= ' ' }
+                    attrName == "type" -> actionParamInfo.type = attrValue.toLowerCase(Locale.ROOT).trim { it <= ' ' }
                     attrName == "suffix" -> {
-                        val suffix = attrValue.toLowerCase().trim { it <= ' ' }
+                        val suffix = attrValue.toLowerCase(Locale.ROOT).trim { it <= ' ' }
 
                         if (actionParamInfo.mime.isEmpty()) {
                             actionParamInfo.mime = Suffix2Mime().toMime(suffix)
@@ -245,10 +246,10 @@ class PageConfigReader {
                         actionParamInfo.suffix = suffix
                     }
                     attrName == "mime" -> {
-                        actionParamInfo.mime = attrValue.toLowerCase()
+                        actionParamInfo.mime = attrValue.toLowerCase(Locale.ROOT)
                     }
                     attrName == "readonly" -> {
-                        val value = attrValue.toLowerCase().trim { it <= ' ' }
+                        val value = attrValue.toLowerCase(Locale.ROOT).trim { it <= ' ' }
                         actionParamInfo.readonly = (value == "readonly" || value == "true" || value == "1")
                     }
                     attrName == "maxlength" -> actionParamInfo.maxLength = Integer.parseInt(attrValue)
@@ -340,7 +341,7 @@ class PageConfigReader {
                                 option.isFab = parser.getAttributeValue(i) == "fab"
                             }
                             "suffix" -> {
-                                val suffix = parser.getAttributeValue(i).toLowerCase().trim { it <= ' ' }
+                                val suffix = parser.getAttributeValue(i).toLowerCase(Locale.ROOT).trim { it <= ' ' }
 
                                 if (option.mime.isEmpty()) {
                                     option.mime = Suffix2Mime().toMime(suffix)
@@ -349,7 +350,7 @@ class PageConfigReader {
                                 option.suffix = suffix
                             }
                             "mime" -> {
-                                option.mime = parser.getAttributeValue(i).toLowerCase()
+                                option.mime = parser.getAttributeValue(i).toLowerCase(Locale.ROOT)
                             }
                         }
                     }
@@ -428,7 +429,7 @@ class PageConfigReader {
                     "auto-off", "auto-close" -> clickableNode.autoOff = (attrValue == "auto-close" || attrValue == "auto-off" || attrValue == "true" || attrValue == "1")
                     "auto-finish" -> clickableNode.autoFinish = (attrValue == "auto-finish" || attrValue == "true" || attrValue == "1")
                     "interruptible", "interruptable" -> clickableNode.interruptable = (
-                            attrValue.isEmpty() || attrValue == "interruptable" || attrValue == "interruptable" || attrValue == "true" || attrValue == "1")
+                            attrValue.isEmpty() || attrValue == "interruptable" || attrValue == "true" || attrValue == "1")
                     "reload-page" -> {
                         if (attrValue == "reload-page" || attrValue == "reload" || attrValue == "page" || attrValue == "true" || attrValue == "1") {
                             clickableNode.reloadPage = true
@@ -566,7 +567,7 @@ class PageConfigReader {
     private fun tagEndInSwitch(switchNode: SwitchNode?, parser: XmlPullParser) {
         if (switchNode != null) {
             val shellResult = executeResultRoot(context, switchNode.getState)
-            switchNode.checked = shellResult != "error" && (shellResult == "1" || shellResult.toLowerCase() == "true")
+            switchNode.checked = shellResult != "error" && (shellResult == "1" || shellResult.toLowerCase(Locale.ROOT) == "true")
             if (switchNode.setState == null) {
                 switchNode.setState = ""
             }
@@ -590,7 +591,7 @@ class PageConfigReader {
     private fun rowNode(textNode: TextNode, parser: XmlPullParser) {
         val textRow = TextNode.TextRow()
         for (i in 0 until parser.attributeCount) {
-            val attrName = parser.getAttributeName(i).toLowerCase()
+            val attrName = parser.getAttributeName(i).toLowerCase(Locale.ROOT)
             val attrValue = parser.getAttributeValue(i)
             try {
                 when (attrName) {
@@ -685,6 +686,6 @@ class PageConfigReader {
             vitualRootNode = NodeInfoBase(pageConfigAbsPath)
         }
 
-        return ScriptEnvironmen.executeResultRoot(context, scriptIn, vitualRootNode);
+        return ScriptEnvironmen.executeResultRoot(context, scriptIn, vitualRootNode)
     }
 }
