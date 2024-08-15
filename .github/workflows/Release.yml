@@ -32,37 +32,37 @@ jobs:
           mkdir -p $HOME/sdk/
           unzip -qod $HOME/sdk/ commandlinetools-linux-9123335_latest.zip
           
-          echo "===> ls $HOME/sdk/ :" && \
-          ls $HOME/sdk/
+          echo "===> ls $HOME/sdk/ :" && ls $HOME/sdk/
           
           mv $HOME/sdk/cmdline-tools $HOME/sdk/latest
           mkdir -p $HOME/sdk/cmdline-tools
           mv $HOME/sdk/latest $HOME/sdk/cmdline-tools/
           
-          echo "===> ls $HOME/sdk/cmdline-tools/latest/bin/ :" && \
-          ls $HOME/sdk/cmdline-tools/latest/bin/
+          echo "===> ls $HOME/sdk/cmdline-tools/latest/bin/ :" && ls $HOME/sdk/cmdline-tools/latest/bin/
           
           export GRADLE_USER_HOME=$HOME/gradle_home
           export ANDROID_HOME=$HOME/sdk
           export ANDROID_SDK_ROOT=$HOME/sdk
           export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
+          echo "HOME="$HOME
+          
+          java -version
+          cmake --version
+          gcc --version
           
           echo "sdk.dir=$HOME/sdk" >> local.properties
           echo "ndk.dir=$HOME/sdk/ndk/24.0.8215888" >> local.properties
           
-          echo "yes\nyes\nyes\nyes\nyes\nyes" | sdkmanager --licenses
+          yes | sdkmanager --licenses || true
           echo "===> sdkmanager install <===" && \
-          echo "yes" | sdkmanager --install "platforms;android-30" "build-tools;30.0.3" "platform-tools" "ndk;24.0.8215888"
+          yes | sdkmanager --install "platforms;android-30" "build-tools;30.0.3" "platform-tools" || true && \
+          yes | sdkmanager --install "ndk;24.0.8215888" || true
+          
+          chmod +x gradlew
         shell: bash
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
 
       - name: Build with Gradle
         run: |
-          java -version
-          cmake --version
-          gcc --version
           ./gradlew assembleRelease
 
       - name: Get tag from GITHUB_REF
@@ -70,25 +70,23 @@ jobs:
         run: |
           tag="${GITHUB_REF#refs/tags/}"
           echo "Release tag: $tag"
-          echo "::set-output name=release_tag::$tag"
+          echo "release_tag=$tag" >> "$GITHUB_OUTPUT"
 
       - id: print_apk_path
         run: |
           whoami
           sudo df -h
           sudo du -sh ${{ github.workspace }}
+          apk_path=$(find ${{ github.workspace }}/app/ -name "Scene_*_release.apk")
+          echo "apk_path=$apk_path" >> "$GITHUB_OUTPUT"
           env
-          sudo find ${{ github.workspace }} -name "Scene_*_release.apk"
+          echo $apk_path
         shell: bash
-
-      - id: apk_path
-        run: |
-          echo "{apk_path}={$(find \${{ github.workspace }}/app/build/outputs/apk/release/ -name "Scene_*_release.apk")}" >> $GITHUB_STATE
 
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.release_tag }}
           files: |
-            ${{ steps.apk_path.outputs.apk_path }}
+            ${{ steps.print_apk_path.outputs.apk_path }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

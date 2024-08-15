@@ -73,6 +73,11 @@ jobs:
         chmod +x gradlew
       shell: bash
 
+    - name: Build with Gradle
+      run: |
+        ./gradlew assembleRelease
+      # build assembleDebug --stacktrace --info --debug --warning-mode all
+
     - name: Cache Gradle packages
       uses: actions/cache@v3
       with:
@@ -81,11 +86,6 @@ jobs:
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/gradle-wrapper.properties', '**/gradle-wrapper.jar') }}
         restore-keys: |
           ${{ runner.os }}-gradle
-
-    - name: Build with Gradle
-      run: |
-        ./gradlew assembleRelease
-      # build assembleDebug --stacktrace --info --debug --warning-mode all
 
     - id: tag
       run: |
